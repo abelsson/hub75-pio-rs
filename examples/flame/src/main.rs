@@ -26,7 +26,7 @@ use rp_pico as bsp;
 
 mod flame;
 
-static mut DISPLAY_BUFFER: hub75_pio::DisplayMemory<64, 32, 12> = hub75_pio::DisplayMemory::new();
+static mut DISPLAY_BUFFER: hub75_pio::DisplayMemory<64, 64, 12> = hub75_pio::DisplayMemory::new();
 
 #[entry]
 fn main() -> ! {
@@ -90,6 +90,7 @@ fn main() -> ! {
                 addrb: pins.gpio7.into_function().into_pull_type().into_dyn_pin(),
                 addrc: pins.gpio8.into_function().into_pull_type().into_dyn_pin(),
                 addrd: pins.gpio9.into_function().into_pull_type().into_dyn_pin(),
+                addre: pins.gpio10.into_function().into_pull_type().into_dyn_pin(),
                 clk: pins.gpio11.into_function().into_pull_type().into_dyn_pin(),
                 lat: pins.gpio12.into_function().into_pull_type().into_dyn_pin(),
                 oe: pins.gpio13.into_function().into_pull_type().into_dyn_pin(),
@@ -112,7 +113,7 @@ fn main() -> ! {
                 let g: u8 = *a.get(1).unwrap();
                 let b: u8 = *a.get(2).unwrap();
 
-                display.set_pixel(x + 14, y, Rgb888::new(r, g, b));
+                display.set_pixel(x + 14, y + 16, Rgb888::new(r, g, b));
             }
         }
         display.commit();

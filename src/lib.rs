@@ -153,6 +153,7 @@ pub struct DisplayPins<F: Function> {
     pub addrb: Pin<DynPinId, F, PullNone>,
     pub addrc: Pin<DynPinId, F, PullNone>,
     pub addrd: Pin<DynPinId, F, PullNone>,
+    pub addre: Pin<DynPinId, F, PullNone>,
     pub lat: Pin<DynPinId, F, PullNone>,
     pub oe: Pin<DynPinId, F, PullNone>,
 }
@@ -282,7 +283,7 @@ where
             );
             let installed = pio_block.install(&program_data.program).unwrap();
             let (mut sm, _, mut tx) = PIOBuilder::from_program(installed)
-                .out_pins(pins.addra.id().num, 4)
+                .out_pins(pins.addra.id().num, 5)
                 .side_set_pin_base(pins.lat.id().num)
                 .clock_divisor_fixed_point(1, 1)
                 .build(row_sm);
@@ -291,6 +292,7 @@ where
                 (pins.addrb.id().num, PinDir::Output),
                 (pins.addrc.id().num, PinDir::Output),
                 (pins.addrd.id().num, PinDir::Output),
+                (pins.addre.id().num, PinDir::Output),
                 (pins.lat.id().num, PinDir::Output),
             ]);
             // Configure the height of the screen
