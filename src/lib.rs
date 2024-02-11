@@ -240,7 +240,7 @@ where
             let (mut sm, _, mut tx) = PIOBuilder::from_program(installed)
                 .out_pins(pins.r1.id().num, 6)
                 .side_set_pin_base(pins.clk.id().num)
-                .clock_divisor_fixed_point(2, 0)
+                .clock_divisor_fixed_point(3, 0)
                 .out_shift_direction(ShiftDirection::Right)
                 .autopull(true)
                 .buffers(Buffers::OnlyTx)
@@ -285,7 +285,7 @@ where
             let (mut sm, _, mut tx) = PIOBuilder::from_program(installed)
                 .out_pins(pins.addra.id().num, 5)
                 .side_set_pin_base(pins.lat.id().num)
-                .clock_divisor_fixed_point(1, 1)
+                .clock_divisor_fixed_point(2, 0)
                 .build(row_sm);
             sm.set_pindirs([
                 (pins.addra.id().num, PinDir::Output),
@@ -318,7 +318,7 @@ where
             let installed = pio_block.install(&program_data.program).unwrap();
             let (mut sm, _, tx) = PIOBuilder::from_program(installed)
                 .side_set_pin_base(pins.oe.id().num)
-                .clock_divisor_fixed_point(1, 1)
+                .clock_divisor_fixed_point(2, 0)
                 .autopull(true)
                 .buffers(Buffers::OnlyTx)
                 .build(oe_sm);
