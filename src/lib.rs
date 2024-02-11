@@ -61,7 +61,7 @@ const fn delays<const B: usize>() -> [u32; B] {
 ///
 /// ## Memory layout
 ///
-/// The pixel buffer is organized in a way way so that transmiting the content of it requires no
+/// The pixel buffer is organized in a way way so that transmitting the content of it requires no
 /// manipulation on the PIO.
 ///
 /// PIO reads the pixel buffer one byte at a time from low to high, then shifts out the pixels from
@@ -70,8 +70,8 @@ const fn delays<const B: usize>() -> [u32; B] {
 /// ### Pixel tuple
 ///
 /// At the lowest level, every byte in the buffer contains a so called pixel tuple. Within a tuple
-/// you will find the nth bit of the R/G/B-componts of two colors. The reason for packing two
-/// colors together is the scan rate of the display. The display this library is targetting is has
+/// you will find the nth bit of the R/G/B-components of two colors. The reason for packing two
+/// colors together is the scan rate of the display. The display this library is targeting is has
 /// a 1:16 scan rate, which means that when you are addressing a pixel at row 0, you are at the
 /// same time addressing a pixel in the same column at row 16.
 ///
