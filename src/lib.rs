@@ -511,13 +511,14 @@ where
     ///
     /// Has to be called once you have drawn something onto the currently inactive buffer.
     pub fn commit(&mut self) {
+        let mut count = 0;
         if self.mem.fbptr[0] == (self.mem.fb0.as_ptr() as u32) {
             self.mem.fbptr[0] = self.mem.fb1.as_ptr() as u32;
-            while !self.benchmark && !self.fb_loop_busy() {}
+            while !self.benchmark && !self.fb_loop_busy() && count < 10000 { count += 1; }
             self.mem.fb0[0..].fill(0);
         } else {
             self.mem.fbptr[0] = self.mem.fb0.as_ptr() as u32;
-            while !self.benchmark && !self.fb_loop_busy() {}
+            while !self.benchmark && !self.fb_loop_busy() && count < 10000  {count += 1; }
             self.mem.fb1[0..].fill(0);
         }
     }
