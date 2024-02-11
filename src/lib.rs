@@ -511,15 +511,10 @@ where
     ///
     /// Has to be called once you have drawn something onto the currently inactive buffer.
     pub fn commit(&mut self) {
-        let mut count = 0;
         if self.mem.fbptr[0] == (self.mem.fb0.as_ptr() as u32) {
             self.mem.fbptr[0] = self.mem.fb1.as_ptr() as u32;
-            while !self.benchmark && !self.fb_loop_busy() && count < 10000 { count += 1; }
-            self.mem.fb0[0..].fill(0);
         } else {
             self.mem.fbptr[0] = self.mem.fb0.as_ptr() as u32;
-            while !self.benchmark && !self.fb_loop_busy() && count < 10000  {count += 1; }
-            self.mem.fb1[0..].fill(0);
         }
     }
 
@@ -528,16 +523,24 @@ where
     /// Note that the coordinates are 0-indexed.
     pub fn set_pixel(&mut self, x: usize, y: usize, color: C) {
         // invert the screen
+
         let x = W - 1 - x;
         let y = H - 1 - y;
         // Half of the screen
         let h = y > (H / 2) - 1;
         let shift = if h { 3 } else { 0 };
         let (c_r, c_g, c_b) = self.lut.lookup(color);
-        let c_r: u16 = ((c_r as f32) * (self.brightness as f32 / 255f32)) as u16;
-        let c_g: u16 = ((c_g as f32) * (self.brightness as f32 / 255f32)) as u16;
-        let c_b: u16 = ((c_b as f32) * (self.brightness as f32 / 255f32)) as u16;
+        let c_r: u16 = ((c_r as u32 * self.brightness as u32) >> 8) as u16;
+        let c_g: u16 = ((c_g as u32 * self.brightness as u32) >> 8) as u16;
+        let c_b: u16 = ((c_b as u32 * self.brightness as u32) >> 8) as u16;
         let base_idx = x + ((y % (H / 2)) * W * B);
+
+        let mut ptr = if self.mem.fbptr[0] == (self.mem.fb0.as_ptr() as u32) {
+            self.mem.fb1.as_ptr()
+        } else {
+            self.mem.fb0.as_ptr()
+        };
+
         for b in 0..B {
             // Extract the n-th bit of each component of the color and pack them
             let cr = c_r >> b & 0b1;
@@ -545,12 +548,10 @@ where
             let cb = c_b >> b & 0b1;
             let packed_rgb = (cb << 2 | cg << 1 | cr) as u8;
             let idx = base_idx + b * W;
-            if self.mem.fbptr[0] == (self.mem.fb0.as_ptr() as u32) {
-                self.mem.fb1[idx] &= !(0b111 << shift);
-                self.mem.fb1[idx] |= packed_rgb << shift;
-            } else {
-                self.mem.fb0[idx] &= !(0b111 << shift);
-                self.mem.fb0[idx] |= packed_rgb << shift;
+            let data = ptr.wrapping_add(idx).cast_mut();
+            unsafe {
+                *data &= !(0b111 << shift);
+                *data |= packed_rgb << shift;
             }
         }
     }
